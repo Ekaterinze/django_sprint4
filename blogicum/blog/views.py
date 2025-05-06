@@ -3,6 +3,7 @@ from datetime import datetime
 from .models import Post, Category
 from .forms import PostForm
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 
 def post(request, id=None):
@@ -15,6 +16,7 @@ def post(request, id=None):
     if form.is_valid():
         form.save()
     return render(request, 'blog/creat.html', context)
+
 
 def delete_post(request, id):
     instance = get_object_or_404(Post, id=id)
@@ -33,9 +35,12 @@ def index(request):
         pub_date__lte=current_datetime,  # __lte - меньше или равно
         is_published=True,
         category__is_published=True
-    ).order_by('-pub_date')[:5]
+    ).order_by('-pub_date')
 
-    context = {'post_list': posts}
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {'page_obj': page_obj}
     return render(request, template, context)
 
 
@@ -69,8 +74,11 @@ def category_posts(request, category_slug):
         is_published=True
     ).order_by('-pub_date')
 
+    paginator = Paginator(post_list, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     context = {
         'category': category,
-        'post_list': post_list
+        'page_obj': page_obj
     }
     return render(request, template, context)
