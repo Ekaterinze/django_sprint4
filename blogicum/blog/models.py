@@ -64,6 +64,7 @@ class Post(PublishedCreatedModel):
         verbose_name='Местоположение',
         related_name='posts'
     )
+    image = models.ImageField('Фото', upload_to='post_images', blank=True)
 
     def __str__(self):
         return self.title

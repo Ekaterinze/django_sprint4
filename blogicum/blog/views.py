@@ -1,6 +1,29 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from datetime import datetime
 from .models import Post, Category
+from .forms import PostForm
+from django.urls import reverse
+
+
+def post(request, id=None):
+    if id is not None:
+        instance = get_object_or_404(Post, id=id)
+    else:
+        instance = None
+    form = PostForm(request.POST or None, files=request.FILES or None, instance=instance)
+    context = {'form': form}
+    if form.is_valid():
+        form.save()
+    return render(request, 'blog/creat.html', context)
+
+def delete_post(request, id):
+    instance = get_object_or_404(Post, id=id)
+    form = PostForm(instance=instance)
+    context = {'form': form}
+    if request.method == 'POST':
+        instance.delete()
+        return redirect('blog:index')
+    return render(request, 'blog/creat.html', context)
 
 
 def index(request):
