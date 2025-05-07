@@ -6,7 +6,12 @@ from django.urls import reverse
 from django.core.paginator import Paginator
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import get_user_model
 
+
+User = get_user_model()
 
 class PostMixin:
     model = Post
@@ -16,7 +21,9 @@ class PostMixin:
 
 
 class PostCreateView(PostMixin, CreateView):
-    pass
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 
 class PostUpdateView(PostMixin, UpdateView):
@@ -85,3 +92,14 @@ class CategoryPostsView(ListView):
         # Добавляем категорию в контекст
         context['category'] = self.category
         return context
+    
+
+class ProfileView(DetailView):
+    model = User
+    template_name = 'blog/profile.html'
+    slug_field = 'username'
+    slug_url_kwarg = 'username'
+    context_object_name = 'profile_user'
+
+    def get_object(self):
+        return get_object_or_404(User, username=self.kwargs['username'])
