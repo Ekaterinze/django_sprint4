@@ -3,6 +3,7 @@ from django.db import models
 
 class PublishedCreatedModel(models.Model):
     """Абстрактная модель с общими полями."""
+
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Добавлено'
