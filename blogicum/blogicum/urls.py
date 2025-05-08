@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
-from django.conf.urls import handler404, handler403, handler500
+from django.conf.urls import handler404, handler500
 
 
 handler404 = 'pages.views.page_not_found'

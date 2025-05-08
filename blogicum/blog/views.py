@@ -240,4 +240,5 @@ class CommentDeleteView(CommentMixin, DeleteView):
     success_url = None  # added success url because DeleteView needs it
 
     def get_success_url(self):
-        return reverse("blog:post_detail", kwargs={'id': self.kwargs['post_id']})
+        return reverse("blog:post_detail",
+                       kwargs={'id': self.kwargs['post_id']})
