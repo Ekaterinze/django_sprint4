@@ -20,11 +20,10 @@ from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
 from django.conf.urls import handler404, handler403, handler500
-from core.views import page_not_found, csrf_failure, server_error
 
-handler404 = page_not_found
-handler403 = csrf_failure
-handler500 = server_error
+
+handler404 = 'pages.views.page_not_found'
+handler500 = 'pages.views.server_error'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,7 +31,7 @@ urlpatterns = [
     path('pages/', include('pages.urls')),
     path('auth/', include('django.contrib.auth.urls')),
     path(
-        'auth/registration/', 
+        'auth/registration/',
         CreateView.as_view(
             template_name='registration/registration_form.html',
             form_class=UserCreationForm,
@@ -40,5 +39,4 @@ urlpatterns = [
         ),
         name='registration',
     ),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

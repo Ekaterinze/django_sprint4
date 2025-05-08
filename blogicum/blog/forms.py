@@ -1,11 +1,12 @@
 from django import forms
-from django.contrib.auth import get_user_model
-from .models import Post, Category, Comment
+from .models import Post, Comment
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserChangeForm
+
 
 User = get_user_model()
-
 
 BEATLES = {'Джон Леннон', 'Пол Маккартни', 'Джордж Харрисон', 'Ринго Старр'}
 
@@ -48,3 +49,9 @@ class PostForm(forms.ModelForm):
             raise ValidationError(
                 'Мы тоже любим Битлз, но введите, пожалуйста, настоящее имя!'
             )
+
+
+class ProfileEditForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
