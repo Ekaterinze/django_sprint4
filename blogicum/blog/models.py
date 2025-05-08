@@ -6,41 +6,66 @@ User = get_user_model()
 
 
 class Category(PublishedCreatedModel):
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
+    """Модель категории для публикаций"""
+
+    title = models.CharField(
+        max_length=256,
+        verbose_name='Заголовок'
+    )
     slug = models.SlugField(
         unique=True,
         verbose_name='Идентификатор',
-        help_text=('Идентификатор страницы для URL; '
+        help_text=('Уникальный идентификатор страницы для URL; '
                    'разрешены символы латиницы, цифры, дефис и подчёркивание.')
     )
-    description = models.TextField(verbose_name='Описание')
+    description = models.TextField(
+        verbose_name='Описание'
+    )
 
     def __str__(self):
+        """Строковое представление категории"""
+
         return self.title
 
     class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
+        ordering = ('title',)
 
 
 class Location(PublishedCreatedModel):
-    name = models.CharField(max_length=256, verbose_name='Название места')
+    """Модель местоположения для публикаций"""
+
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Название места'
+    )
 
     def __str__(self):
+        """Строковое представление местоположения"""
+
         return self.name
 
     class Meta:
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
+        ordering = ('name',)
 
 
 class Post(PublishedCreatedModel):
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
-    text = models.TextField(verbose_name='Текст')
+    """Основная модель публикации (поста)"""
+
+    title = models.CharField(
+        max_length=256,
+        verbose_name='Заголовок'
+    )
+    text = models.TextField(
+        verbose_name='Текст'
+    )
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
-        help_text=('Если установить дату и время в будущем'
-                   ' — можно делать отложенные публикации.')
+        help_text=('Если установить дату и время в будущем — '
+                   'можно делать отложенные публикации.')
     )
     author = models.ForeignKey(
         User,
@@ -63,35 +88,56 @@ class Post(PublishedCreatedModel):
         verbose_name='Местоположение',
         related_name='posts'
     )
-    image = models.ImageField('Фото', upload_to='post_images', blank=True)
+    image = models.ImageField(
+        'Фото',
+        upload_to='post_images',
+        blank=True
+    )
 
     def __str__(self):
+        """Строковое представление публикации"""
+
         return self.title
 
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
         ordering = ('-pub_date',)
+        indexes = [
+            models.Index(fields=['-pub_date', 'author']),
+        ]
 
 
 class Comment(models.Model):
-    text = models.TextField('Текст комментария')
+    """Модель комментария к публикации"""
+    text = models.TextField(
+        'Текст комментария'
+    )
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
         related_name='comment',
         verbose_name='публикация'
     )
-    created_at = models.DateTimeField(auto_now_add=True,
-                                      verbose_name='Добавлено')
-    author = models.ForeignKey(User,
-                               on_delete=models.CASCADE,
-                               verbose_name='Автор комментария')
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Добавлено'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name='Автор комментария'
+    )
 
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
         ordering = ('created_at',)
+        indexes = [
+            models.Index(fields=['created_at', 'author'])
+        ]
 
     def __str__(self):
+        """Строковое представление комментария"""
+
         return f"Комментарий пользователя {self.author}"

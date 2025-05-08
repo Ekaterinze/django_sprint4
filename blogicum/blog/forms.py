@@ -8,32 +8,40 @@ from django.contrib.auth.forms import UserChangeForm
 
 User = get_user_model()
 
+# Список имен участников группы Beatles для проверки
 BEATLES = {'Джон Леннон', 'Пол Маккартни', 'Джордж Харрисон', 'Ринго Старр'}
 
 
 class ProfileEditForm(forms.ModelForm):
+    """Форма для редактирования профиля пользователя"""
+
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username', 'email')
 
 
 class CommentForm(forms.ModelForm):
+    """Форма для добавления комментария"""
+
     class Meta:
         model = Comment
         fields = ('text',)
 
-
 class PostForm(forms.ModelForm):
+    """Форма для создания и редактирования поста"""
+
     class Meta:
-        # Указываем модель, на основе которой должна строиться форма.
         model = Post
-        exclude = ['is_published', 'author']
-        # Указываем, что надо отобразить все поля.
+        exclude = ['is_published', 'author']  # Исключаем эти поля из формы
         widgets = {
-            'pub_date': forms.DateTimeInput(attrs={'type': 'datetime-local'})
+            'pub_date': forms.DateTimeInput(
+                attrs={'type': 'datetime-local'}
+            ),
         }
 
     def clean(self):
+        """Кастомная валидация формы с проверкой имени автора"""
+
         super().clean()
         title = self.cleaned_data['title']
         if f'{title}' in BEATLES:
@@ -49,9 +57,3 @@ class PostForm(forms.ModelForm):
             raise ValidationError(
                 'Мы тоже любим Битлз, но введите, пожалуйста, настоящее имя!'
             )
-
-
-class ProfileEditForm(UserChangeForm):
-    class Meta:
-        model = User
-        fields = ('username', 'first_name', 'last_name', 'email')
