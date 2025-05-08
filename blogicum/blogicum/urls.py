@@ -19,6 +19,12 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
+from django.conf.urls import handler404, handler403, handler500
+from core.views import page_not_found, csrf_failure, server_error
+
+handler404 = page_not_found
+handler403 = csrf_failure
+handler500 = server_error
 
 urlpatterns = [
     path('admin/', admin.site.urls),

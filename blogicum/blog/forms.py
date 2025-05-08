@@ -1,15 +1,32 @@
 from django import forms
-from .models import Post, Category
+from django.contrib.auth import get_user_model
+from .models import Post, Category, Comment
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 
+User = get_user_model()
+
+
 BEATLES = {'Джон Леннон', 'Пол Маккартни', 'Джордж Харрисон', 'Ринго Старр'}
+
+
+class ProfileEditForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'username', 'email')
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('text',)
+
 
 class PostForm(forms.ModelForm):
     class Meta:
         # Указываем модель, на основе которой должна строиться форма.
         model = Post
-        exclude = ['is_published'] 
+        exclude = ['is_published', 'author']
         # Указываем, что надо отобразить все поля.
         widgets = {
             'pub_date': forms.DateTimeInput(attrs={'type': 'datetime-local'})
@@ -19,7 +36,7 @@ class PostForm(forms.ModelForm):
         super().clean()
         title = self.cleaned_data['title']
         if f'{title}' in BEATLES:
-            # Отправляем письмо, если кто-то представляется 
+            # Отправляем письмо, если кто-то представляется
             # именем одного из участников Beatles.
             send_mail(
                 subject='Another Beatles member',
